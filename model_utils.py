@@ -15,7 +15,21 @@ def load_model(model_2.2.3_bigru_crf_biowordvec.pth):
 
 
 def predict(model, sentence, label_map):
-    # Dummy prediction logic – replace with your actual preprocessing + prediction
-    tokens = sentence.split()
-    prediction = ["O"] * len(tokens)  # Simulate predictions
-    return list(zip(tokens, prediction))
+    # Load actual token2idx mapping
+    with open("token2idx.json") as f:
+        token2idx = json.load(f)
+
+    # Tokenize and index the sentence
+    words = sentence.strip().split()
+    input_ids = [token2idx.get(w.lower(), token2idx.get("<PAD>", 0)) for w in words]
+
+    input_tensor = torch.tensor([input_ids], dtype=torch.long)
+    mask = torch.tensor([[1]*len(input_ids)], dtype=torch.uint8)
+
+    with torch.no_grad():
+        outputs = model(input_tensor, mask=mask)
+
+    idx2label = {v: k for k, v in label_map.items()}
+    tags = [idx2label.get(tag, "O") for tag in outputs[0]]
+
+    return list(zip(words, tags))
