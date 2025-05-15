@@ -2,7 +2,7 @@ import torch
 import numpy as np
 from model_architecture import BiGRUCRFClass  # This should match your model file name
 
-def load_model(model_path):
+def load_model(model_2.2.3_bigru_crf_biowordvec.pth):
     embedding_matrix = np.load("embedding_matrix.npy")
     hidden_dim = 256  # Use the same as in training
     output_dim = 4    # Based on your label2idx.json (can also be len(label2idx))
